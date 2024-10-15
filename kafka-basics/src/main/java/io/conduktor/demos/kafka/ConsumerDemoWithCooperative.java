@@ -1,9 +1,6 @@
 package io.conduktor.demos.kafka;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
@@ -13,13 +10,13 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Properties;
 
-public class ConsumerDemoWithShutdown {
+public class ConsumerDemoWithCooperative {
 
-    private static final Logger log = LoggerFactory.getLogger(ConsumerDemoWithShutdown.class.getSimpleName());
+    private static final Logger log = LoggerFactory.getLogger(ConsumerDemoWithCooperative.class.getSimpleName());
 
     public static void main(String[] args) {
 
-        log.info("I am a Kafka consumer with proper shutdown!");
+        log.info("I am a Kafka consumer with proper shutdown and cooperative assignment strategy");
 
         String bootstrapServers = "localhost:9092";
         String topicName = "java_demo";
@@ -36,6 +33,7 @@ public class ConsumerDemoWithShutdown {
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, consumerGroupId);
+        properties.put(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG, CooperativeStickyAssignor.class.getName());
 
         // create the consumer
         KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(properties);
